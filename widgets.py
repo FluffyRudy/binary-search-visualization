@@ -1,7 +1,9 @@
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, Callable
 import pygame
 from cursor import Cursors, WidgetCursor
 from cursor import ARROW, IBEAM
+from constants import MARKER_SIZE
+from constants import BUTTON_SIZE
 
 
 class TextField:
@@ -32,6 +34,15 @@ class TextField:
 
         self.cursor = WidgetCursor((5, self.text_surf.get_height()))
         self.cursor_y = (self.rect.height - self.cursor.height) // 2
+
+        marker = pygame.transform.scale(
+            pygame.image.load("./marker.png").convert_alpha(), (MARKER_SIZE)
+        )
+        self.marker_rect = marker.get_rect(midbottom=self.rect.midtop)
+
+    @property
+    def marker_position(self):
+        return self.marker_rect.topleft
 
     def get_offset(self) -> Tuple[int, int, int]:
         "x, y, right"
@@ -140,3 +151,25 @@ class TextField:
             self.border_width,
             self.border_radius,
         )
+
+
+class Button:
+    def __init__(self, x: int, y: int, action_callback: Optional[Callable] = None):
+        self.image = pygame.Surface(BUTTON_SIZE, pygame.SRCALPHA)
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.action = action_callback
+        self.font = pygame.font.Font(None, 25)
+        self.text = self.font.render("S e a r c h", True, "lime")
+        self.text_rect = self.text.get_rect(
+            center=(self.image.width // 2, self.image.height // 2)
+        )
+        self.action = action_callback
+
+    def draw(self, surface: pygame.Surface):
+        self.image.blit(self.text, self.text_rect.topleft)
+        surface.blit(self.image, self.rect.topleft)
+        pygame.draw.rect(surface, "lime", self.rect, 2, 3)
+
+    def handle_event(self, event: pygame.event.Event):
+        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
+            self.action()
