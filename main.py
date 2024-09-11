@@ -50,7 +50,6 @@ class BinSearcher:
         self.init_text_blocks()
 
     def update_array(self, array: List[int]):
-        """Updates the array and resets binary search markers."""
         self.array = array
         self.low = 0
         self.mid = 0
@@ -60,7 +59,6 @@ class BinSearcher:
         self.init_text_blocks()
 
     def set_value(self, value: int):
-        """Sets the value to search for."""
         self.search_value = value
 
     def init_text_blocks(self):
@@ -81,7 +79,6 @@ class BinSearcher:
             i += 1
 
     def draw_blocks(self, display_surface: pygame.Surface):
-        """Draws the text blocks and markers for the binary search process."""
         for block in self.text_blocks:
             if block == self.text_blocks[self.low]:
                 display_surface.blit(
@@ -98,7 +95,6 @@ class BinSearcher:
         self.detail_surface.fill((0, 0, 0))
 
     def display_search_detail(self):
-        """Displays the search details (low, mid, high) on the screen."""
         details = [
             (f"low: {self.low}", 0),
             (f"mid: {self.mid}", self.font_height),
@@ -112,7 +108,6 @@ class BinSearcher:
             )
 
     def init_search(self):
-        """Performs one iteration of the binary search algorithm."""
         if self.low > self.high:
             self.mid_marker.set_alpha(0)
             return
@@ -185,15 +180,12 @@ class BinarySearchVisualization:
         self.font = pygame.font.Font(None, 25)
 
     def create_text_field(self, x, y, width, height, color=(255, 255, 255)):
-        """Helper function to create a TextField."""
         return TextField(x, y, "", (int(width), height), color=color)
 
     def perform_search(self):
-        """Executes one search step."""
         self.bin_searcher.init_search()
 
     def handle_event(self):
-        """Handles events such as input and button clicks."""
         for event in pygame.event.get():
             self.input_field.handle_event(event)
             self.search_value_field.handle_event(event)
@@ -204,7 +196,6 @@ class BinarySearchVisualization:
                 sys.exit()
 
     def handle_search(self):
-        """Handles the search button click and initializes the binary search."""
         search_value = self.search_value_field.get_value()
         if not search_value:
             return
@@ -233,7 +224,6 @@ class BinarySearchVisualization:
                 self.err_start_timer = current_time
 
     def draw(self):
-        """Draws all components on the screen."""
         self.screen.fill((0, 0, 0))
         self.bin_searcher.draw_blocks(self.screen)
         self.search_value_field.draw(self.screen)
@@ -243,13 +233,11 @@ class BinarySearchVisualization:
         pygame.display.flip()
 
     def update(self):
-        """Updates input fields and performs a search."""
         self.input_field.update()
         self.search_value_field.update()
         self.perform_search()
 
     def run(self):
-        """Main game loop."""
         while True:
             self.handle_event()
             self.update()
