@@ -203,7 +203,7 @@ class BinarySearchVisualization:
 
         if search_value.find("-") == -1:
             pass
-        elif search_value.index("-") != 0:
+        elif search_value.index("-") != 0 or search_value.count("-") > 1:
             self.show_error = True
             self.error_message = "Invalid search value"
             self.err_start_timer = pygame.time.get_ticks()
