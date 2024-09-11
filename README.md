@@ -24,10 +24,10 @@ A simple visualization tool for binary search implemented in Python using Pygame
    ```
 4. ```bash
    #On Linux and mac
-   source venv/bin/activate
+   source .venv/bin/activate
 
     # On Windows
-    venv\Scripts\activate
+    .venv\Scripts\activate
    ```
 
 5. ```bash
