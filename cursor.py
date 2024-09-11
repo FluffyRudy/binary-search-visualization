@@ -34,7 +34,6 @@ class WidgetCursor(pygame.Surface):
         self.blinking_time = 500
         self.time_prev = pygame.time.get_ticks()
         self.is_visible = True
-        self.index = 0
 
     def handle_blinking_event(self):
         time_current = pygame.time.get_ticks()
@@ -53,6 +52,3 @@ class WidgetCursor(pygame.Surface):
 
     def update(self):
         self.handle_blinking_event()
-
-    def update_cursor_index(self, factor: int):
-        self.index += factor

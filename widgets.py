@@ -112,12 +112,6 @@ class TextField:
             elif event.key == pygame.K_BACKSPACE:
                 self.value = self.value[:-1]
 
-            elif event.key == pygame.K_RIGHT:
-                self.cursor.update_cursor_index(+1)
-
-            elif event.key == pygame.K_LEFT:
-                self.cursor.update_cursor_index(-1)
-
             keyname = pygame.key.name(event.key)
 
             if len(keyname) == 1:

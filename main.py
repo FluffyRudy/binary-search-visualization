@@ -3,6 +3,7 @@ import pygame, sys
 from widgets import TextField, Button
 from strfilter import str_to_numlist
 from constants import MARKER_SIZE, SEARCH_FIELD_SIZE
+from constants import ALLOWED_KEYS
 import time
 
 FPS = 60
@@ -42,13 +43,25 @@ class BinSearcher:
 
         self.prev_time = pygame.time.get_ticks()
 
+        self.is_init_move = True
+
+        font_size = 30
+        self.font = pygame.font.Font(None, font_size)
+        self.detail_surface = pygame.Surface(
+            (SCREEN_WIDTH, int(SCREEN_HEIGHT * 0.2)), pygame.SRCALPHA
+        )
+        self.detail_rect = self.detail_surface.get_rect(bottomleft=(0, SCREEN_HEIGHT))
+        self.font_height = self.font.size(f"{self.low}")[1] + font_size + 5
+
     def update_array(self, array: List[int]):
         self.array = array
         self.low = 0
         self.mid = 0
         self.high = max(0, len(self.array) - 1)
+        self.is_init_move = True
         self.text_blocks.clear()
         self.init_text_blocks()
+        self.mid_marker.set_alpha(255)
 
     def set_value(self, value: int):
         self.search_value = value
@@ -73,12 +86,36 @@ class BinSearcher:
     def draw_blocks(self, display_surface: pygame.Surface):
         for block in self.text_blocks:
             if block == self.text_blocks[self.low]:
-                display_surface.blit(self.low_marker, block.marker_position)
+                x, y = block.marker_position
+                display_surface.blit(self.low_marker, (x, block.rect.bottom))
             if block == self.text_blocks[self.mid]:
                 display_surface.blit(self.mid_marker, block.marker_position)
             if block == self.text_blocks[self.high]:
                 display_surface.blit(self.high_marker, block.marker_position)
             block.draw(display_surface)
+        self.display_search_detail(display_surface)
+        display_surface.blit(self.detail_surface, self.detail_rect.topleft)
+        self.detail_surface.fill((0, 0, 0))
+
+    def display_search_detail(self, display_surface: pygame.Surface):
+        low_surface = self.font.render(f"low: {self.low}", True, (255, 255, 255))
+        mid_surface = self.font.render(f"mid: {self.mid}", True, (255, 255, 255))
+        high_surface = self.font.render(f"high: {self.high}", True, (255, 255, 255))
+
+        low_position = (MARKER_SIZE[0] + 20, 0)
+        mid_position = (MARKER_SIZE[0] + 20, self.font_height)
+        high_position = (MARKER_SIZE[0] + 20, self.font_height * 2)
+
+        font_render_surfaces = [
+            (low_surface, low_position),
+            (mid_surface, mid_position),
+            (high_surface, high_position),
+        ]
+
+        self.detail_surface.blits(font_render_surfaces)
+        self.detail_surface.blit(self.low_marker, (0, 0))
+        self.detail_surface.blit(self.mid_marker, (0, MARKER_SIZE[1] + 20))
+        self.detail_surface.blit(self.high_marker, (0, MARKER_SIZE[1] * 2 + 40))
 
     def init_search(self):
         if self.low > self.high:
@@ -87,7 +124,11 @@ class BinSearcher:
         if len(self.array) == 0 or self.search_value is None:
             return
         current_time = pygame.time.get_ticks()
-        if current_time - self.prev_time >= 1000:
+        if current_time - self.prev_time >= 1500:
+            self.prev_time = current_time
+            if self.is_init_move:
+                self.is_init_move = False
+                return
             self.mid = self.low + (self.high - self.low) // 2
             if self.array[self.mid] == self.search_value:
                 return
@@ -95,7 +136,6 @@ class BinSearcher:
                 self.low = self.mid + 1
             elif self.array[self.mid] > self.search_value:
                 self.high = self.mid - 1
-            self.prev_time = current_time
 
 
 class BinarySearchVisualization:
@@ -112,33 +152,8 @@ class BinarySearchVisualization:
         self.input_field = TextField(
             centerx, top + offset_y, "", (int(screen_rect.width * 0.9), 100)
         )
-        allowed_keys = [
-            pygame.K_COMMA,
-            pygame.K_BACKSPACE,
-            pygame.K_LEFT,
-            pygame.K_RIGHT,
-            pygame.K_0,
-            pygame.K_KP0,
-            pygame.K_1,
-            pygame.K_KP1,
-            pygame.K_2,
-            pygame.K_KP2,
-            pygame.K_3,
-            pygame.K_KP3,
-            pygame.K_4,
-            pygame.K_KP4,
-            pygame.K_5,
-            pygame.K_KP5,
-            pygame.K_6,
-            pygame.K_KP6,
-            pygame.K_7,
-            pygame.K_KP7,
-            pygame.K_8,
-            pygame.K_KP8,
-            pygame.K_9,
-            pygame.K_KP9,
-        ]
-        self.input_field.allow_keys(allowed_keys)
+
+        self.input_field.allow_keys(ALLOWED_KEYS)
 
         input_offset = self.input_field.get_offset()
         self.search_value_field = TextField(
@@ -148,7 +163,7 @@ class BinarySearchVisualization:
             SEARCH_FIELD_SIZE,
             color=(100, 100, 100),
         )
-        self.search_value_field.allow_keys(allowed_keys)
+        self.search_value_field.allow_keys(ALLOWED_KEYS)
 
         searcher_offset = (
             input_offset[0],
@@ -172,13 +187,12 @@ class BinarySearchVisualization:
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.KEYDOWN:
-                pass
-
     def handle_search(self):
         search_value = self.search_value_field.get_value()
+        if not search_value:
+            return
         self.bin_searcher.set_value(int(search_value))
-        values = str_to_numlist(self.input_field.get_value())
+        values = sorted(str_to_numlist(self.input_field.get_value()))
         self.bin_searcher.update_array(values)
 
     def draw(self):
