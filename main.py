@@ -2,7 +2,8 @@ from typing import List, Tuple, Optional
 import pygame, sys
 from widgets import TextField, Button
 from strfilter import str_to_numlist
-from constants import MARKER_SIZE, SEARCH_FIELD_SIZE, ALLOWED_KEYS
+from constants import MARKER_SIZE, SEARCH_FIELD_SIZE
+from constants import NUMERIC_KEYS, NON_NUMERIC_KEYS
 import time
 
 FPS = 60
@@ -175,6 +176,17 @@ class BinarySearchVisualization:
             None,
         )
 
+        ALL_ALLOWED_KEYS = NUMERIC_KEYS + NON_NUMERIC_KEYS
+        self.input_field.allow_keys(ALL_ALLOWED_KEYS.copy())
+
+        ALL_ALLOWED_KEYS.remove(pygame.K_COMMA)
+        self.search_value_field.allow_keys(ALL_ALLOWED_KEYS)
+
+        self.error_message = ""
+        self.show_error = False
+        self.err_start_timer = 0
+        self.font = pygame.font.Font(None, 25)
+
     def create_text_field(self, x, y, width, height, color=(255, 255, 255)):
         """Helper function to create a TextField."""
         return TextField(x, y, "", (int(width), height), color=color)
@@ -200,9 +212,28 @@ class BinarySearchVisualization:
         if not search_value:
             return
 
+        if search_value.find("-") == -1:
+            pass
+        elif search_value.index("-") != 0:
+            self.show_error = True
+            self.error_message = "Invalid search value"
+            self.err_start_timer = pygame.time.get_ticks()
+            return
+
         self.bin_searcher.set_value(int(search_value))
         values = sorted(str_to_numlist(self.input_field.get_value()))
         self.bin_searcher.update_array(values)
+
+    def display_error(self):
+
+        if self.show_error:
+            error_message = self.font.render(self.error_message, True, (180, 0, 0))
+            self.screen.blit(error_message, self.search_value_field.rect.bottomleft)
+
+            current_time = pygame.time.get_ticks()
+            if current_time - self.err_start_timer >= 2000:
+                self.show_error = False
+                self.err_start_timer = current_time
 
     def draw(self):
         """Draws all components on the screen."""
@@ -211,6 +242,7 @@ class BinarySearchVisualization:
         self.search_value_field.draw(self.screen)
         self.search_button.draw(self.screen)
         self.input_field.draw(self.screen)
+        self.display_error()
         pygame.display.flip()
 
     def update(self):

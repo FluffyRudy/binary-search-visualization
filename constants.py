@@ -4,9 +4,7 @@ MARKER_SIZE = (32, 32)
 SEARCH_FIELD_SIZE = (200, 50)
 BUTTON_SIZE = (150, 50)
 
-ALLOWED_KEYS = [
-    pygame.K_COMMA,
-    pygame.K_BACKSPACE,
+NUMERIC_KEYS = [
     pygame.K_0,
     pygame.K_KP0,
     pygame.K_1,
@@ -27,4 +25,11 @@ ALLOWED_KEYS = [
     pygame.K_KP8,
     pygame.K_9,
     pygame.K_KP9,
+]
+
+NON_NUMERIC_KEYS = [
+    pygame.K_COMMA,
+    pygame.K_BACKSPACE,
+    pygame.K_MINUS,
+    pygame.K_KP_MINUS,
 ]

@@ -106,20 +106,18 @@ class TextField:
                 if event.key not in self.unrestricted_keys:
                     return
 
+            keyname = pygame.key.name(event.key)
             if event.key == pygame.K_RETURN:
                 self.is_focused = False
 
             elif event.key == pygame.K_BACKSPACE:
                 self.value = self.value[:-1]
 
-            keyname = pygame.key.name(event.key)
-
-            if len(keyname) == 1:
+            elif len(keyname) == 1:
                 self.value += keyname
-            elif (
-                len(keyname) > 1 and keyname[1].isdigit()
-            ):  # may cause potential problem in future
-                self.value += keyname[1]
+            elif len(keyname) > 1:
+                if keyname[1].isdigit() or keyname[1] == "-":
+                    self.value += keyname[1]
             if prev_value == self.value:
                 return
             else:
