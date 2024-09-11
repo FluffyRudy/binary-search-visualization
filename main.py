@@ -183,7 +183,8 @@ class BinarySearchVisualization:
         return TextField(x, y, "", (int(width), height), color=color)
 
     def perform_search(self):
-        self.bin_searcher.init_search()
+        if self.bin_searcher.search_value is not None and self.bin_searcher.array:
+            self.bin_searcher.init_search()
 
     def handle_event(self):
         for event in pygame.event.get():
