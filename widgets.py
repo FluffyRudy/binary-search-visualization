@@ -143,6 +143,7 @@ class TextField:
             self.border_width,
             self.border_radius,
         )
+        self.mask_surface.fill((0, 0, 0))
 
 
 class Button:
