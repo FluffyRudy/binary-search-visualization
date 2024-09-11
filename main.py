@@ -227,7 +227,7 @@ class BinarySearchVisualization:
     def display_error(self):
 
         if self.show_error:
-            error_message = self.font.render(self.error_message, True, (180, 0, 0))
+            error_message = self.font.render(self.error_message, True, (250, 0, 0))
             self.screen.blit(error_message, self.search_value_field.rect.bottomleft)
 
             current_time = pygame.time.get_ticks()
