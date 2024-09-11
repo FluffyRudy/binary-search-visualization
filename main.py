@@ -64,24 +64,21 @@ class BinSearcher:
         self.search_value = value
 
     def init_text_blocks(self):
-        """Initializes the text blocks for visual representation of the array."""
         x, y, right = self.margin
-        self.text_blocks.clear()
-        for i, elem in enumerate(self.array):
+        i = 0
+        for elem in self.array:
             pos_x = x + (i + 1) * BinSearcher.BLOCK_SIZE[0]
             pos_y = y
-
             if pos_x > right - BinSearcher.BLOCK_SIZE[0] // 2:
                 i = 0
                 pos_x = x + (i + 1) * BinSearcher.BLOCK_SIZE[0]
                 y += int(BinSearcher.BLOCK_SIZE[1] * 2)
                 pos_y = y
-
-            self.text_blocks.append(
-                TextField(
-                    pos_x, pos_y, elem, size=BinSearcher.BLOCK_SIZE, readonly=True
-                )
+            text_block = TextField(
+                pos_x, pos_y, elem, size=BinSearcher.BLOCK_SIZE, readonly=True
             )
+            self.text_blocks.append(text_block)
+            i += 1
 
     def draw_blocks(self, display_surface: pygame.Surface):
         """Draws the text blocks and markers for the binary search process."""
